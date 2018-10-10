@@ -5,11 +5,25 @@ civicrm_initialize();
 $statusses = array();
 $civi_status = civicrm_api3('ParticipantStatusType', 'get', array('options' => array('limit' => 999)));
 foreach($civi_status['values'] as $civi_status) {
-    switch ($civi_status['class']) {
-        case 'Positive':
-        case 'Pending':
-            $statusses[$civi_status['id']] = $civi_status['id'];
-            break;
+    switch ($civi_status['name']) {
+        case 'Registered':
+          $statusses[$civi_status['id']] = $civi_status['id'];
+          break;
+        case 'Attended':
+          $statusses[$civi_status['id']] = $civi_status['id'];
+          break;
+        case 'Pending from pay later':
+          $statusses[$civi_status['id']] = $civi_status['id'];
+          break;
+        case 'Pending from incomplete transaction':
+          $statusses[$civi_status['id']] = $civi_status['id'];
+          break;
+        case 'Pending in cart':
+          $statusses[$civi_status['id']] = $civi_status['id'];
+          break;
+        case 'Cancelled':
+          $statusses[$civi_status['id']] = $civi_status['id'];
+          break;
     }
 }
 
@@ -31,7 +45,7 @@ $handler->display->display_options['title'] = 'My past or canceled event registr
 $handler->display->display_options['use_more_always'] = FALSE;
 $handler->display->display_options['access']['type'] = 'role';
 $handler->display->display_options['access']['role'] = array(
-    2 => '2',
+  2 => '2',
 );
 $handler->display->display_options['cache']['type'] = 'none';
 $handler->display->display_options['query']['type'] = 'views_query';
@@ -43,49 +57,49 @@ $handler->display->display_options['pager']['options']['id'] = '0';
 $handler->display->display_options['pager']['options']['quantity'] = '9';
 $handler->display->display_options['style_plugin'] = 'table';
 $handler->display->display_options['style_options']['columns'] = array(
-    'id' => 'id',
-    'start_date' => 'start_date',
-    'title' => 'title',
-    'role' => 'role',
-    'status' => 'status',
+  'id' => 'id',
+  'start_date' => 'start_date',
+  'title' => 'title',
+  'role' => 'role',
+  'status' => 'status',
 );
 $handler->display->display_options['style_options']['default'] = '-1';
 $handler->display->display_options['style_options']['info'] = array(
-    'id' => array(
-        'sortable' => 0,
-        'default_sort_order' => 'asc',
-        'align' => '',
-        'separator' => '',
-        'empty_column' => 0,
-    ),
-    'start_date' => array(
-        'sortable' => 0,
-        'default_sort_order' => 'asc',
-        'align' => '',
-        'separator' => '',
-        'empty_column' => 0,
-    ),
-    'title' => array(
-        'sortable' => 0,
-        'default_sort_order' => 'asc',
-        'align' => '',
-        'separator' => '',
-        'empty_column' => 0,
-    ),
-    'role' => array(
-        'sortable' => 0,
-        'default_sort_order' => 'asc',
-        'align' => '',
-        'separator' => '',
-        'empty_column' => 0,
-    ),
-    'status' => array(
-        'sortable' => 0,
-        'default_sort_order' => 'asc',
-        'align' => '',
-        'separator' => '',
-        'empty_column' => 0,
-    ),
+  'id' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'start_date' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'title' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'role' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'status' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
 );
 /* No results behavior: Global: Unfiltered text */
 $handler->display->display_options['empty']['area_text_custom']['id'] = 'area_text_custom';
@@ -141,7 +155,34 @@ $handler->display->display_options['fields']['role']['label'] = 'My role';
 $handler->display->display_options['fields']['status']['id'] = 'status';
 $handler->display->display_options['fields']['status']['table'] = 'civicrm_participant';
 $handler->display->display_options['fields']['status']['field'] = 'status';
-$handler->display->display_options['fields']['status']['label'] = 'Status';
+$handler->display->display_options['fields']['status']['label'] = 'Registration Status';
+/* Field: Register or cancel registration link */
+$handler->display->display_options['fields']['php']['id'] = 'php';
+$handler->display->display_options['fields']['php']['table'] = 'views';
+$handler->display->display_options['fields']['php']['field'] = 'php';
+$handler->display->display_options['fields']['php']['ui_name'] = 'Register or cancel registration link';
+$handler->display->display_options['fields']['php']['label'] = '';
+$handler->display->display_options['fields']['php']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['php']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php']['php_output'] = '<?php
+$params_status = array(
+  \'version\' => 3,
+  \'sequential\' => 1,
+  \'id\' => $row->status,
+  \'return\' => \'name\',
+);
+$result_status = civicrm_api(\'ParticipantStatusType\', \'getvalue\', $params_status);
+
+if($result_status == \'Invited\') {
+echo \'<a href="/my-event-registrations/register/\'.$row->id.\'?destination=my-event-registrations">Register</a>\';
+} else if (($result_status == \'Registered\') && ($row->start_date > strtotime("+1 day"))) {
+echo \'<a href="/my-event-registrations/cancel-registration/\'.$row->id.\'?destination=my-event-registrations">Cancel registration</a>\';
+} else if (($result_status == \'Cancelled\') && ($row->start_date > strtotime("+1 day"))) {
+echo \'<a href="/my-event-registrations/register/\'.$row->id.\'?destination=my-event-registrations">Register</a>\';
+}
+?>';
+$handler->display->display_options['fields']['php']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php']['php_click_sortable'] = '';
 /* Sort criterion: CiviCRM Events: Start Date */
 $handler->display->display_options['sorts']['start_date']['id'] = 'start_date';
 $handler->display->display_options['sorts']['start_date']['table'] = 'civicrm_event';
@@ -149,8 +190,8 @@ $handler->display->display_options['sorts']['start_date']['field'] = 'start_date
 $handler->display->display_options['sorts']['start_date']['relationship'] = 'event_id';
 $handler->display->display_options['filter_groups']['operator'] = 'OR';
 $handler->display->display_options['filter_groups']['groups'] = array(
-    1 => 'AND',
-    2 => 'AND',
+  1 => 'AND',
+  2 => 'AND',
 );
 /* Filter criterion: User: Current */
 $handler->display->display_options['filters']['uid_current']['id'] = 'uid_current';
@@ -185,7 +226,7 @@ $handler->display->display_options['filters']['status_1']['id'] = 'status_1';
 $handler->display->display_options['filters']['status_1']['table'] = 'civicrm_participant';
 $handler->display->display_options['filters']['status_1']['field'] = 'status';
 $handler->display->display_options['filters']['status_1']['value'] = array(
-    $cancel_id => $cancel_id,
+  $cancel_id => $cancel_id,
 );
 $handler->display->display_options['filters']['status_1']['group'] = 2;
 /* Filter criterion: CiviCRM Events: Start Date */
@@ -208,33 +249,30 @@ $handler->display->display_options['filters']['start_date_2']['value']['type'] =
 /* Display: Page */
 $handler = $view->new_display('page', 'Page', 'page');
 $handler->display->display_options['path'] = 'my-past-event-registrations';
-$handler->display->display_options['menu']['title'] = 'My Event Registrations';
-$handler->display->display_options['menu']['weight'] = '0';
-$handler->display->display_options['menu']['context'] = 0;
-$handler->display->display_options['menu']['context_only_inline'] = 0;
+
 $translatables['my_canceled_event_registrations'] = array(
-    t('Master'),
-    t('My Canceled Event Registrations'),
-    t('more'),
-    t('Apply'),
-    t('Reset'),
-    t('Sort by'),
-    t('Asc'),
-    t('Desc'),
-    t('Items per page'),
-    t('- All -'),
-    t('Offset'),
-    t('« first'),
-    t('‹ previous'),
-    t('next ›'),
-    t('last »'),
-    t('You do not have any canceled or past events'),
-    t('Event'),
-    t('Contact'),
-    t('Drupal User'),
-    t('.'),
-    t('Date'),
-    t('My role'),
-    t('Status'),
-    t('Page'),
+  t('Master'),
+  t('My Canceled Event Registrations'),
+  t('more'),
+  t('Apply'),
+  t('Reset'),
+  t('Sort by'),
+  t('Asc'),
+  t('Desc'),
+  t('Items per page'),
+  t('- All -'),
+  t('Offset'),
+  t('« first'),
+  t('‹ previous'),
+  t('next ›'),
+  t('last »'),
+  t('You do not have any canceled or past events'),
+  t('Event'),
+  t('Contact'),
+  t('Drupal User'),
+  t('.'),
+  t('Date'),
+  t('My role'),
+  t('Status'),
+  t('Page'),
 );

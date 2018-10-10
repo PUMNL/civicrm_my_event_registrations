@@ -5,11 +5,16 @@ civicrm_initialize();
 $statusses = array();
 $civi_status = civicrm_api3('ParticipantStatusType', 'get', array('options' => array('limit' => 999)));
 foreach($civi_status['values'] as $civi_status) {
-    switch ($civi_status['class']) {
-        case 'Positive':
-        case 'Pending':
-            $statusses[$civi_status['id']] = $civi_status['id'];
-            break;
+    switch ($civi_status['name']) {
+        case 'Registered':
+          $statusses[$civi_status['id']] = $civi_status['id'];
+          break;
+        case 'Attended':
+          $statusses[$civi_status['id']] = $civi_status['id'];
+          break;
+        case 'Invited':
+          $statusses[$civi_status['id']] = $civi_status['id'];
+          break;
     }
 }
 
@@ -41,49 +46,49 @@ $handler->display->display_options['pager']['options']['id'] = '0';
 $handler->display->display_options['pager']['options']['quantity'] = '9';
 $handler->display->display_options['style_plugin'] = 'table';
 $handler->display->display_options['style_options']['columns'] = array(
-    'id' => 'id',
-    'start_date' => 'start_date',
-    'title' => 'title',
-    'role' => 'role',
-    'status' => 'status',
+  'id' => 'id',
+  'start_date' => 'start_date',
+  'title' => 'title',
+  'role' => 'role',
+  'status' => 'status',
 );
 $handler->display->display_options['style_options']['default'] = '-1';
 $handler->display->display_options['style_options']['info'] = array(
-    'id' => array(
-        'sortable' => 0,
-        'default_sort_order' => 'asc',
-        'align' => '',
-        'separator' => '',
-        'empty_column' => 0,
-    ),
-    'start_date' => array(
-        'sortable' => 0,
-        'default_sort_order' => 'asc',
-        'align' => '',
-        'separator' => '',
-        'empty_column' => 0,
-    ),
-    'title' => array(
-        'sortable' => 0,
-        'default_sort_order' => 'asc',
-        'align' => '',
-        'separator' => '',
-        'empty_column' => 0,
-    ),
-    'role' => array(
-        'sortable' => 0,
-        'default_sort_order' => 'asc',
-        'align' => '',
-        'separator' => '',
-        'empty_column' => 0,
-    ),
-    'status' => array(
-        'sortable' => 0,
-        'default_sort_order' => 'asc',
-        'align' => '',
-        'separator' => '',
-        'empty_column' => 0,
-    ),
+  'id' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'start_date' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'title' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'role' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'status' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
 );
 /* Footer: Global: Text area */
 $handler->display->display_options['footer']['area']['id'] = 'area';
@@ -153,17 +158,55 @@ $handler->display->display_options['fields']['role']['label'] = 'My role';
 $handler->display->display_options['fields']['status']['id'] = 'status';
 $handler->display->display_options['fields']['status']['table'] = 'civicrm_participant';
 $handler->display->display_options['fields']['status']['field'] = 'status';
-$handler->display->display_options['fields']['status']['label'] = 'Status';
-/* Field: Global: Custom text */
+$handler->display->display_options['fields']['status']['label'] = 'Registration Status';
+/* Field: Cancel registration link */
 $handler->display->display_options['fields']['nothing']['id'] = 'nothing';
 $handler->display->display_options['fields']['nothing']['table'] = 'views';
 $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
+$handler->display->display_options['fields']['nothing']['ui_name'] = 'Cancel registration link';
 $handler->display->display_options['fields']['nothing']['label'] = '';
+$handler->display->display_options['fields']['nothing']['exclude'] = TRUE;
 $handler->display->display_options['fields']['nothing']['alter']['text'] = 'Cancel registration';
 $handler->display->display_options['fields']['nothing']['alter']['make_link'] = TRUE;
 $handler->display->display_options['fields']['nothing']['alter']['path'] = 'my-event-registrations/cancel-registration/[id]?destination=my-event-registrations';
 $handler->display->display_options['fields']['nothing']['alter']['absolute'] = TRUE;
 $handler->display->display_options['fields']['nothing']['element_label_colon'] = FALSE;
+/* Field: Register link */
+$handler->display->display_options['fields']['nothing_1']['id'] = 'nothing_1';
+$handler->display->display_options['fields']['nothing_1']['table'] = 'views';
+$handler->display->display_options['fields']['nothing_1']['field'] = 'nothing';
+$handler->display->display_options['fields']['nothing_1']['ui_name'] = 'Register link';
+$handler->display->display_options['fields']['nothing_1']['label'] = '';
+$handler->display->display_options['fields']['nothing_1']['exclude'] = TRUE;
+$handler->display->display_options['fields']['nothing_1']['alter']['text'] = 'Register';
+$handler->display->display_options['fields']['nothing_1']['alter']['make_link'] = TRUE;
+$handler->display->display_options['fields']['nothing_1']['alter']['path'] = 'my-event-registrations/register/[id]?destination=my-event-registrations';
+$handler->display->display_options['fields']['nothing_1']['element_label_colon'] = FALSE;
+/* Field: Register or cancel registration link */
+$handler->display->display_options['fields']['php']['id'] = 'php';
+$handler->display->display_options['fields']['php']['table'] = 'views';
+$handler->display->display_options['fields']['php']['field'] = 'php';
+$handler->display->display_options['fields']['php']['ui_name'] = 'Register or cancel registration link';
+$handler->display->display_options['fields']['php']['label'] = '';
+$handler->display->display_options['fields']['php']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['php']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php']['php_output'] = '<?php
+$params = array(
+  \'version\' => 3,
+  \'sequential\' => 1,
+  \'id\' => $row->status,
+  \'return\' => \'name\',
+);
+$result = civicrm_api(\'ParticipantStatusType\', \'getvalue\', $params);
+
+if($result == \'Invited\' && ($row->start_date > strtotime("+1 day"))) {
+echo \'<a href="/my-event-registrations/register/\'.$row->id.\'?destination=my-event-registrations">Register</a>\';
+} else if ($result == \'Registered\' && ($row->start_date > strtotime("+1 day"))) {
+echo \'<a href="/my-event-registrations/cancel-registration/\'.$row->id.\'?destination=my-event-registrations">Cancel registration</a>\';
+}
+?>';
+$handler->display->display_options['fields']['php']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php']['php_click_sortable'] = '';
 /* Sort criterion: CiviCRM Events: Start Date */
 $handler->display->display_options['sorts']['start_date']['id'] = 'start_date';
 $handler->display->display_options['sorts']['start_date']['table'] = 'civicrm_event';
@@ -186,36 +229,40 @@ $handler->display->display_options['filters']['start_date']['value']['type'] = '
 $handler->display->display_options['filters']['status']['id'] = 'status';
 $handler->display->display_options['filters']['status']['table'] = 'civicrm_participant';
 $handler->display->display_options['filters']['status']['field'] = 'status';
-$handler->display->display_options['filters']['status']['operator'] = 'in';
 $handler->display->display_options['filters']['status']['value'] = $statusses;
 
 /* Display: Page */
 $handler = $view->new_display('page', 'Page', 'page');
 $handler->display->display_options['path'] = 'my-event-registrations';
 $handler->display->display_options['menu']['type'] = 'normal';
-$handler->display->display_options['menu']['title'] = 'My Event Registrations';
+$handler->display->display_options['menu']['title'] = 'My Events';
+$handler->display->display_options['menu']['weight'] = '10';
+$handler->display->display_options['menu']['name'] = 'menu-other';
+$handler->display->display_options['menu']['context'] = 0;
+$handler->display->display_options['menu']['context_only_inline'] = 0;
+
 $translatables['my_event_registrations'] = array(
-    t('Master'),
-    t('My Event Registrations'),
-    t('more'),
-    t('Apply'),
-    t('Reset'),
-    t('Sort by'),
-    t('Asc'),
-    t('Desc'),
-    t('Items per page'),
-    t('- All -'),
-    t('Offset'),
-    t('« first'),
-    t('‹ previous'),
-    t('next ›'),
-    t('last »'),
-    t('Event'),
-    t('Contact'),
-    t('Drupal User'),
-    t('.'),
-    t('Date'),
-    t('My role'),
-    t('Status'),
-    t('Page'),
+  t('Master'),
+  t('My Event Registrations'),
+  t('more'),
+  t('Apply'),
+  t('Reset'),
+  t('Sort by'),
+  t('Asc'),
+  t('Desc'),
+  t('Items per page'),
+  t('- All -'),
+  t('Offset'),
+  t('« first'),
+  t('‹ previous'),
+  t('next ›'),
+  t('last »'),
+  t('Event'),
+  t('Contact'),
+  t('Drupal User'),
+  t('.'),
+  t('Date'),
+  t('My role'),
+  t('Status'),
+  t('Page'),
 );
