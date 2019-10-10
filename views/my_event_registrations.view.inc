@@ -236,8 +236,8 @@ $handler = $view->new_display('page', 'Page', 'page');
 $handler->display->display_options['path'] = 'my-event-registrations';
 $handler->display->display_options['menu']['type'] = 'normal';
 $handler->display->display_options['menu']['title'] = 'My Events';
-$handler->display->display_options['menu']['weight'] = '10';
-$handler->display->display_options['menu']['name'] = 'menu-other';
+$handler->display->display_options['menu']['weight'] = '-50';
+$handler->display->display_options['menu']['name'] = 'menu-events';
 $handler->display->display_options['menu']['context'] = 0;
 $handler->display->display_options['menu']['context_only_inline'] = 0;
 
